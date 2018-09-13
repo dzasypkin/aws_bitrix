@@ -1,0 +1,19 @@
+variable "aws_access_key" {
+  default = "AWS_KEY_ID_HERE"
+}
+
+variable "aws_secret_key" {
+  default = "AWS_KEY_SECRET_HERE"
+}
+
+variable "aws_region" {
+  default = "us-west-2"
+}
+
+variable "public_key" {
+  default = "ssh-rsa ..." 
+}
+
+variable "private_key_path" {
+  default = "~/.ssh/id_rsa"
+}

@@ -1,0 +1,51 @@
+---
+- name: 1.Add official MariaDB repository
+  yum_repository:
+    name: MariaDB
+    description: Official MariaDB repository
+    baseurl: "http://yum.mariadb.org/{{ mariadb_version }}/{{ ansible_distribution|lower|regex_replace('redhat', 'rhel') }}{{ ansible_distribution_major_version }}-amd64"
+    gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+    gpgcheck: true
+
+- name: 2.Install packages
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - MariaDB
+    - MariaDB-server
+    - MySQL-python
+
+- name: 3.Start mysqld
+  service:
+    name: mysqld
+    state: started
+
+- name: 4.Check if root password is set
+  shell: >
+    mysqladmin -u root status
+  changed_when: false
+  failed_when: false
+  register: root_pwd_check
+  when: mysql_root_password is defined
+
+- name: 5.Set MariaDB root password for the first time (root@localhost)
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    host: localhost
+    state: present
+  when: mysql_root_password is defined and root_pwd_check.rc == 0
+
+- name: 6.Set MariaDB root password for 127.0.0.1, ::1
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    host: "{{ item }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+  with_items:
+    - ::1
+    - 127.0.0.1
+  when: mysql_root_password is defined and root_pwd_check.rc == 0

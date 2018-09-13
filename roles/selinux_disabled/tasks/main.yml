@@ -1,0 +1,19 @@
+---
+- name: 1.Disable selinux
+  selinux:
+    state: disabled
+  register: selinux
+
+- name: 2.Restart server if selinux was disabled
+  shell: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+  when: selinux is changed
+
+- name: 3.Wait for the reboot to complete if there was a change.
+  wait_for_connection:
+    connect_timeout: 60
+    sleep: 5
+    delay: 5
+    timeout: 300
+  when: selinux is changed

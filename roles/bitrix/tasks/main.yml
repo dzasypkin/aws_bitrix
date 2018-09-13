@@ -1,0 +1,14 @@
+---
+- name: Copy repo file
+  copy:
+    src: bitrix.repo
+    dest: /etc/yum.repos.d/bitrix.repo
+
+- name: Install bitrix
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    enablerepo: bitrix
+  with_items:
+    - bitrix-env

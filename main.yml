@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: true
+  gather_facts: yes #IMPORTANT
+  roles:
+    - selinux_disabled
+    - epel-repository
+    - php
+    - mariadb
+    - bitrix
+
