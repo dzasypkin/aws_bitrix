@@ -49,7 +49,7 @@ resource "aws_eip" "bitrix_ip" {
   vpc      = true
 
   provisioner "local-exec" {
-    command = "ansible-playbook -i '${aws_eip.bitrix_ip.public_ip},' main.yml --user=centos --private-key=${var.private_key_path}"
+    command = "ansible-playbook --ssh-common-args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' -i '${aws_eip.bitrix_ip.public_ip},' main.yml --user=centos --private-key=${var.private_key_path}"
   }
 }
 
